@@ -2,19 +2,19 @@ GameObject cells[][];
 float cellSize = 5;
 int numberOfColums;
 int numberOfRows;
-int fillPercentage = 15;
-float speed = 13;
-float speedChange = 0.2;
+int fillPercentage = 10;
+float gameSpeed = 25;
+float gameSpeedChange = 0.2;
 
-int cellX;
-int cellY;
-int numberOfNeighbours;
+//int cellX;
+//int cellY;
+
 
 
 void setup() {
   size(1080, 720);
   rectMode(CENTER);
-  frameRate(speed);
+  frameRate(gameSpeed);
   gameSetup();
 }
 
@@ -28,44 +28,40 @@ void draw() {
 
 
 void changeGameSpeed() {
-  frameRate(speed);
+  frameRate(gameSpeed);
   if(speedUp) {
-    speed += speedChange;
+    gameSpeed += gameSpeedChange;
   }
-  if(speedDown && speed > 4) {
-    speed -= speedChange;
+  if(speedDown && gameSpeed > 4) {
+    gameSpeed -= gameSpeedChange;
   }
 }
 
 
 void checkEachCell() {
-  for (cellY = 0; cellY < numberOfRows; cellY++) {
-    for (cellX = 0; cellX < numberOfColums; cellX++) {
-      cells[cellX][cellY].draw();
-      checkCellsNeighbours();
-      checkAliveOrDead();
+  for (int y = 0; y < numberOfRows; y++) {
+    for (int x = 0; x < numberOfColums; x++) {
+      cells[x][y].draw();
+      checkCellsNeighbours(x, y);
+      cells[x][y].checkAliveOrDead();
     }
   }
 }
 
-
-void checkCellsNeighbours() {
-  numberOfNeighbours = 0;
+void checkCellsNeighbours(int cellX, int cellY) {
+  int numberOfNeighbours = 0;
   for(int neighbourY = -1; neighbourY <= 1; neighbourY++) {
     for(int neighbourX = -1; neighbourX <= 1; neighbourX++) {
-      if          (isAliveNeighbour(neighbourX, neighbourY) 
+      if          (isAliveNeighbour(cellX, cellY, neighbourX, neighbourY) 
                   && cells[cellX + neighbourX][cellY + neighbourY].alive) {
         numberOfNeighbours++;
       }
     }
   }
+  cells[cellX][cellY].numberOfNeighbours = numberOfNeighbours;
 }
 
-//void countAliveNeighbour() {
-//  if()
-//}
-
-boolean isAliveNeighbour(int thisNeighbourX, int thisNeighbourY) {
+boolean isAliveNeighbour(int cellX, int cellY, int thisNeighbourX, int thisNeighbourY) {
   if               (cellX + thisNeighbourX >= 0 
                    && cellY + thisNeighbourY >= 0
                    && cellX + thisNeighbourX < numberOfColums
@@ -80,36 +76,10 @@ boolean isAliveNeighbour(int thisNeighbourX, int thisNeighbourY) {
 }
 
 
-void checkAliveOrDead() {
-      if(cells[cellX][cellY].alive) {
-        tryKillNextGen();
-      }
-      else if(!cells[cellX][cellY].alive) {
-        tryRessurectNextGen();
-      }
-}
-
-
-void tryKillNextGen() {
-  if(numberOfNeighbours < 2 || numberOfNeighbours > 3) {
-    cells[cellX][cellY].nextGenAlive = false;
-    cells[cellX][cellY].haveDied = true;
-  }
-}
-
-
-void tryRessurectNextGen() {
-  if(numberOfNeighbours == 3) {
-    cells[cellX][cellY].nextGenAlive = true;
-    cells[cellX][cellY].haveDied = false;
-  }
-}
-
-
 void changeToNextGen() {
-  for (cellY = 0; cellY < numberOfRows; cellY++) {
-    for (cellX = 0; cellX < numberOfColums; cellX++) {
-      cells[cellX][cellY].alive = cells[cellX][cellY].nextGenAlive;
+  for (int y = 0; y < numberOfRows; y++) {
+    for (int x = 0; x < numberOfColums; x++) {
+      cells[x][y].alive = cells[x][y].nextGenAlive;
     }
   }
 }
