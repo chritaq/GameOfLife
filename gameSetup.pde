@@ -1,17 +1,20 @@
 void gameSetup() {
-  calculateGridByScreenAndCellSize();
+  frameRate(gameSpeed);
+  calculateGridWithScreenAndCellSize();
   initiateMatrix();
   createGameBoard();
 }
 
-void calculateGridByScreenAndCellSize() {
+void calculateGridWithScreenAndCellSize() {
   numberOfColums = (int)Math.floor(width/cellSize);
   numberOfRows = (int)Math.floor(height/cellSize);
 }
 
+
 void initiateMatrix() {
   cells = new GameObject[numberOfColums][numberOfRows];
 }
+
 
 void createGameBoard() {
   for (int y = 0; y < numberOfRows; y++) {
@@ -22,11 +25,15 @@ void createGameBoard() {
 }
 
 
-void createGameObject(int thisX, int thisY) {
-  //Create our game objects, multiply by cellSize for correct placement
-  cells[thisX][thisY] = new GameObject(thisX * cellSize + cellSize/2, thisY * cellSize + cellSize/2, cellSize);
-  
+void createGameObject(int x, int y) {
+  cells[x][y] = new GameObject(fixScreenOffset(x), fixScreenOffset(y), cellSize);
   if (random(0, 100) < fillPercentage) {
-    cells[thisX][thisY].alive = true;
+    cells[x][y].alive = true;
   }
+}
+
+
+float fixScreenOffset(float position) {
+  float positionFix = position * cellSize + cellSize/2;
+  return positionFix;
 }
